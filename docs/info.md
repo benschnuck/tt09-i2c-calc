@@ -13,8 +13,8 @@ I2C calculator. We will let you know how it works later.
 
 ## How to test
 
-Explain how to use your project
+We can't let it be default/
 
 ## External hardware
 
-List external hardware used in your project (e.g. PMOD, LED display, etc), if any
+I microcontroller to send I2C commands.
