@@ -9,7 +9,7 @@ You can also include images in this folder and reference them in the markdown. E
 
 ## How it works
 
-Explain how your project works
+I2C calculator. We will let you know how it works later.
 
 ## How to test
 
