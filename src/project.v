@@ -37,7 +37,22 @@ module tt_um_bsrk_i2c_calc (
     assign uio_out = 0;
     assign uio_oe  = 0;
 
-    // List all unused inputs to prevent warnings
+    // Unused inputs
     wire _unused = &{ena, rst_n, ui_in, uio_in};
+
+    // Assign values for simulation purposes
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            first_input_number <= 0;
+            second_input_number <= 0;
+            operation <= 0;
+        end else begin
+            // These values will remain constant unless changed
+            // For dynamic testing, we can update them via tasks or DPI calls
+            first_input_number <= 32'd28;
+            second_input_number <= 32'd4;
+            operation <= 2'b00; // Change as needed for testing
+        end
+    end
 
 endmodule

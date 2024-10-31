@@ -14,7 +14,8 @@ module tb ();
     $dumpvars(0, tb.user_project.calculator_instance.second_input_number);
     $dumpvars(0, tb.user_project.calculator_instance.operation);
     $dumpvars(0, tb.user_project.calculator_instance.result);
-    #1;
+    #10;
+    $finish;
   end
 
   // Wire up the inputs and outputs:

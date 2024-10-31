@@ -47,3 +47,4 @@ async def test_calculator_operations(dut):
             # For other operations, result is in lower 32 bits
             result_32 = result_value & 0xFFFFFFFF
             assert result_32 == expected_value, f"Operation {test['op']} result mismatch: expected {expected_value}, got {result_32}"
+    # await ClockCycles(dut.clk, 20)  # Adjust the number as needed

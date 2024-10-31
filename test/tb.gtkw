@@ -21,5 +21,7 @@ tb.user_project.calculator_instance.first_input_number[31:0]
 tb.user_project.calculator_instance.second_input_number[31:0]
 tb.user_project.calculator_instance.operation[1:0]
 tb.user_project.calculator_instance.result[63:0]
+tb.user_project.clk
+tb.user_project.rst_n
 [pattern_trace] 1
 [pattern_trace] 0
