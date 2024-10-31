@@ -1,41 +1,49 @@
-# SPDX-FileCopyrightText: © 2024 Tiny Tapeout
-# SPDX-License-Identifier: Apache-2.0
-
 import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import ClockCycles
 
-
 @cocotb.test()
-async def test_project(dut):
-    dut._log.info("Start")
+async def test_calculator_operations(dut):
+    dut._log.info("Start calculator operations test")
 
-    # Set the clock period to 10 us (100 KHz)
-    clock = Clock(dut.clk, 10, units="us")
+    # Set up the clock
+    clock = Clock(dut.clk, 10, units="ns")
     cocotb.start_soon(clock.start())
 
     # Reset
     dut._log.info("Reset")
     dut.ena.value = 1
-    dut.ui_in.value = 0
-    dut.uio_in.value = 0
     dut.rst_n.value = 0
-    await ClockCycles(dut.clk, 10)
+    await ClockCycles(dut.clk, 5)
     dut.rst_n.value = 1
 
-    dut._log.info("Test project behavior")
+    # Define test cases
+    test_cases = [
+        {'op': 0, 'first': 28, 'second': 4, 'expected': 32},   # Addition
+        {'op': 1, 'first': 28, 'second': 4, 'expected': 24},   # Subtraction
+        {'op': 2, 'first': 28, 'second': 4, 'expected': 112},  # Multiplication
+        {'op': 3, 'first': 28, 'second': 4, 'expected': 7},    # Division
+    ]
 
-    # Set the input values you want to test
-    dut.ui_in.value = 20
-    dut.uio_in.value = 30
+    for test in test_cases:
+        dut._log.info(f"Testing operation {test['op']} with inputs {test['first']} and {test['second']}")
 
-    # Wait for one clock cycle to see the output values
-    await ClockCycles(dut.clk, 1)
+        # Set inputs
+        dut.user_project.first_input_number.value = test['first']
+        dut.user_project.second_input_number.value = test['second']
+        dut.user_project.operation.value = test['op']
 
-    # The following assersion is just an example of how to check the output values.
-    # Change it to match the actual expected output of your module:
-    result_value = int(dut.user_project.calculator_instance.result.value)
-    assert result_value == 32
+        # Wait for a clock edge
+        await ClockCycles(dut.clk, 1)
 
-    # Keep testing the module by changing the input values, waiting for
-    # one or more clock cycles, and asserting the expected output values.
+        result_value = int(dut.user_project.calculator_instance.result.value)
+        expected_value = test['expected']
+
+        if test['op'] == 2:
+            # Multiplication result may be in upper 64 bits
+            expected_result = test['expected']
+            assert result_value == expected_result, f"Multiplication result mismatch: expected {expected_result}, got {result_value}"
+        else:
+            # For other operations, result is in lower 32 bits
+            result_32 = result_value & 0xFFFFFFFF
+            assert result_32 == expected_value, f"Operation {test['op']} result mismatch: expected {expected_value}, got {result_32}"

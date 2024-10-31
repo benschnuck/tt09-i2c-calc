@@ -18,25 +18,26 @@ module tt_um_bsrk_i2c_calc (
     input  wire       rst_n     // reset_n - low to reset
 );
 
-  // All output pins must be assigned. If not used, assign to 0.
+    // Declare internal registers
+    reg [31:0] first_input_number;
+    reg [31:0] second_input_number;
+    reg [1:0]  operation;
+    wire [63:0] result;
 
-  wire [31:0] first_input_number = 32'd28;
-  wire [31:0] second_input_number = 32'd4; 
-  wire [1:0] operation = 2'b00;
-  wire [63:0] result = 64'h0;
+    // Instantiate the calculator module with the clock
+    calculator calculator_instance (
+        .clk(clk),
+        .first_input_number (first_input_number),
+        .second_input_number (second_input_number),
+        .operation (operation),
+        .result (result)
+    );
 
-  calculator calculator_instance (
-      .first_input_number (first_input_number),
-      .second_input_number (second_input_number),
-      .operation (operation),
-      .result (result)
-  );
+    assign uo_out  = 0;
+    assign uio_out = 0;
+    assign uio_oe  = 0;
 
-  assign uo_out  = 0;  // Example: ou_out is the sum of ui_in and uio_in
-  assign uio_out = 0;
-  assign uio_oe  = 0;
-
-  // List all unused inputs to prevent warnings
-  wire _unused = &{ena, clk, rst_n, 1'b0};
+    // List all unused inputs to prevent warnings
+    wire _unused = &{ena, rst_n, ui_in, uio_in};
 
 endmodule
