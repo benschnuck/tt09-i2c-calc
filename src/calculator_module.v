@@ -14,10 +14,25 @@ module calculator(
     begin
         
         case(operation)
-            OPR_ADD: result[32:0] = first_input_number + second_input_number;
-            OPR_SUB: result[32:0] = first_input_number - second_input_number;
-            OPR_MUL: result[63:0] = first_input_number * second_input_number;
-            OPR_DIV: result[31:0] = (second_input_number != 0) ? (first_input_number / second_input_number) : 32'b0;  
+            OPR_ADD:
+            begin
+                result[32:0] = first_input_number + second_input_number;
+                result[63:33] = 31'h0;
+            end
+            OPR_SUB: 
+            begin
+                result[32:0] = first_input_number - second_input_number;
+                result[63:33] = 31'h0;
+            end
+            OPR_MUL: 
+            begin
+                result[63:0] = first_input_number * second_input_number;
+            end
+            OPR_DIV: 
+            begin
+                result[31:0] = (second_input_number != 0) ? (first_input_number / second_input_number) : 32'b0;  
+                result[63:32] = 32'h0;
+            end
             default: result[63:0] = 64'h0;
         endcase
     end
