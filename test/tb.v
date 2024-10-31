@@ -6,51 +6,48 @@
 */
 module tb ();
 
-    // Clock and reset
-    reg clk;
-    reg rst_n;
-    reg ena;
+  // Dump the signals to a VCD file. You can view it with gtkwave.
+  initial begin
+    $dumpfile("tb.vcd");
+    $dumpvars(2, tb);
+    $dumpvars(0, tb.user_project.calculator_instance.first_input_number);
+    $dumpvars(0, tb.user_project.calculator_instance.second_input_number);
+    $dumpvars(0, tb.user_project.calculator_instance.operation);
+    $dumpvars(0, tb.user_project.calculator_instance.result);
+    #10;
+  end
 
-    // Inputs and outputs
-    reg [7:0] ui_in;
-    reg [7:0] uio_in;
-    wire [7:0] uo_out;
-    wire [7:0] uio_out;
-    wire [7:0] uio_oe;
+  // Wire up the inputs and outputs:
+  reg clk;
+  reg rst_n;
+  reg ena;
+  reg [7:0] ui_in;
+  reg [7:0] uio_in;
+  wire [7:0] uo_out;
+  wire [7:0] uio_out;
+  wire [7:0] uio_oe;
+`ifdef GL_TEST
+  wire VPWR = 1'b1;
+  wire VGND = 1'b0;
+`endif
 
-    // Instantiate the top-level module
-    tt_um_bsrk_i2c_calc dut (
-        .ui_in(ui_in),
-        .uo_out(uo_out),
-        .uio_in(uio_in),
-        .uio_out(uio_out),
-        .uio_oe(uio_oe),
-        .ena(ena),
-        .clk(clk),
-        .rst_n(rst_n)
-    );
+  // Replace tt_um_example with your module name:
+  tt_um_bsrk_i2c_calc user_project (
 
-    // Clock generation
-    initial clk = 0;
-    always #5 clk = ~clk; // 100MHz clock
+      // Include power ports for the Gate Level test:
+`ifdef GL_TEST
+      .VPWR(VPWR),
+      .VGND(VGND),
+`endif
 
-    // Reset and test sequences
-    initial begin
-        // Initialize inputs
-        ena = 1;
-        rst_n = 0;
-        ui_in = 8'd0;
-        uio_in = 8'd0;
-
-        // Reset sequence
-        #20;
-        rst_n = 1;
-
-        // Wait for a few clock cycles
-        #20;
-
-        // Test cases
-        // Define your test cases here or use your cocotb testbench
-    end
+      .ui_in  (ui_in),    // Dedicated inputs
+      .uo_out (uo_out),   // Dedicated outputs
+      .uio_in (uio_in),   // IOs: Input path
+      .uio_out(uio_out),  // IOs: Output path
+      .uio_oe (uio_oe),   // IOs: Enable path (active high: 0=input, 1=output)
+      .ena    (ena),      // enable - goes high when design is selected
+      .clk    (clk),      // clock
+      .rst_n  (rst_n)     // not reset
+  );
 
 endmodule

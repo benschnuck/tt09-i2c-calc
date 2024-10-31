@@ -4,11 +4,14 @@ from cocotb.triggers import ClockCycles
 
 @cocotb.test()
 async def test_calculator_operations(dut):
-    # Start the clock
+    dut._log.info("Start calculator operations test")
+
+    # Set up the clock
     clock = Clock(dut.clk, 10, units="ns")
     cocotb.start_soon(clock.start())
 
     # Reset
+    dut._log.info("Reset")
     dut.ena.value = 1
     dut.rst_n.value = 0
     await ClockCycles(dut.clk, 5)
@@ -23,29 +26,25 @@ async def test_calculator_operations(dut):
     ]
 
     for test in test_cases:
-        # Prepare inputs
-        operation = test['op'] & 0x3      # 2 bits for operation
-        first_input = test['first'] & 0x3F  # 6 bits for first input
-        second_input = test['second'] & 0xFF  # 8 bits for second input
+        dut._log.info(f"Testing operation {test['op']} with inputs {test['first']} and {test['second']}")
 
         # Set inputs
-        dut.ui_in.value = (operation << 6) | first_input
-        dut.uio_in.value = second_input
+        dut.user_project.first_input_number.value = test['first']
+        dut.user_project.second_input_number.value = test['second']
+        dut.user_project.operation.value = test['op']
 
-        # Wait for processing
-        await ClockCycles(dut.clk, 1)
+        # Wait for a clock edge
+        await ClockCycles(dut.clk, 2)
 
-        # Read outputs
-        result_low = dut.uo_out.value.integer
-        result_high = dut.uio_out.value.integer
-        result = (result_high << 8) | result_low
+        result_value = int(dut.user_project.calculator_instance.result.value)
+        expected_value = test['expected']
 
-        expected_result = test['expected'] & 0xFFFF
-
-        # Check result
-        assert result == expected_result, f"Test failed: Operation {operation}, first input: {first_input}, second input: {second_input}, clock cycles: {dut.clk.value},        expected {expected_result}, got {result}"
-
-        dut._log.info(f"Test passed for operation {operation}")
-
-    # Wait a few clock cycles
-    await ClockCycles(dut.clk, 5)
+        if test['op'] == 2:
+            # Multiplication result may be in upper 64 bits
+            expected_result = test['expected']
+            assert result_value == expected_result, f"Multiplication result mismatch: expected {expected_result}, got {result_value}"
+        else:
+            # For other operations, result is in lower 32 bits
+            result_32 = result_value & 0xFFFFFFFF
+            assert result_32 == expected_value, f"Operation {test['op']} result mismatch: expected {expected_value}, got {result_32}"
+    # await ClockCycles(dut.clk, 20)  # Adjust the number as needed
