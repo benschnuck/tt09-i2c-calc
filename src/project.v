@@ -4,7 +4,8 @@
  */
 
 `default_nettype none
-`include "i2c_slave.v"
+`timescale 1ns / 1ps
+`include "calculator_module.v"
 
 module tt_um_bsrk_i2c_calc (
     input  wire [7:0] ui_in,    // Dedicated inputs
@@ -17,19 +18,21 @@ module tt_um_bsrk_i2c_calc (
     input  wire       rst_n     // reset_n - low to reset
 );
 
-  wire SDA, SCL, RST;
-  assign SDA = uio_in[0];
-  assign SCL = uio_in[1];
-  assign RST = uio_in[2];
+  // All output pins must be assigned. If not used, assign to 0.
 
-  i2c i2c_peripheral (
-      .SDA  (SDA),    // Dedicated inputs
-      .SCL (SCL),   // Dedicated outputs
-      .RST (RST)   // IOs: Input path
+  wire [31:0] first_input_number = 32'd16;
+  wire [31:0] second_input_number = 32'd4; 
+  wire [1:0] operation = 2'b00;
+  wire [63:0] result = 64'h0;
+
+  calculator calculator_instance (
+      .first_input_number (first_input_number),
+      .second_input_number (second_input_number),
+      .operation (operation),
+      .result (result)
   );
 
-  // All output pins must be assigned. If not used, assign to 0.
-  assign uo_out  = ui_in + uio_in;  // Example: ou_out is the sum of ui_in and uio_in
+  assign uo_out  = 0;  // Example: ou_out is the sum of ui_in and uio_in
   assign uio_out = 0;
   assign uio_oe  = 0;
 
