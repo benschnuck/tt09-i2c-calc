@@ -20,7 +20,7 @@ module tt_um_bsrk_i2c_calc (
 
   // All output pins must be assigned. If not used, assign to 0.
 
-  wire [31:0] first_input_number = 32'd16;
+  wire [31:0] first_input_number = 32'd28;
   wire [31:0] second_input_number = 32'd4; 
   wire [1:0] operation = 2'b00;
   wire [63:0] result = 64'h0;
