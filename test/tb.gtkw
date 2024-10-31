@@ -1,25 +1,27 @@
 [*]
 [*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
-[*] Thu Oct 31 04:50:17 2024
+[*] Thu Oct 31 05:40:44 2024
 [*]
 [dumpfile] "/workspaces/tt09-i2c-calc/test/tb.vcd"
-[dumpfile_mtime] "Thu Oct 31 04:43:40 2024"
-[dumpfile_size] 869
+[dumpfile_mtime] "Thu Oct 31 05:38:36 2024"
+[dumpfile_size] 2143
 [savefile] "/workspaces/tt09-i2c-calc/test/tb.gtkw"
 [timestart] 0
 [size] 1376 600
 [pos] -1 -1
-*0.000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-15.000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] tb.
 [treeopen] tb.user_project.
 [sst_width] 214
 [signals_width] 230
 [sst_expanded] 1
 [sst_vpaned_height] 151
-@25
+@24
 tb.user_project.calculator_instance.first_input_number[31:0]
 tb.user_project.calculator_instance.second_input_number[31:0]
+@100000029
 tb.user_project.calculator_instance.operation[1:0]
+@24
 tb.user_project.calculator_instance.result[63:0]
 tb.user_project.clk
 tb.user_project.rst_n

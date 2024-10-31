@@ -34,7 +34,7 @@ async def test_calculator_operations(dut):
         dut.user_project.operation.value = test['op']
 
         # Wait for a clock edge
-        await ClockCycles(dut.clk, 1)
+        await ClockCycles(dut.clk, 2)
 
         result_value = int(dut.user_project.calculator_instance.result.value)
         expected_value = test['expected']
