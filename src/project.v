@@ -8,23 +8,35 @@
 `include "calculator_module.v"
 
 module tt_um_bsrk_i2c_calc (
-    input  wire [7:0] ui_in,    // Dedicated inputs
-    output wire [7:0] uo_out,   // Dedicated outputs
-    input  wire [7:0] uio_in,   // IOs: Input path
-    output wire [7:0] uio_out,  // IOs: Output path
-    output wire [7:0] uio_oe,   // IOs: Enable path (active high: 0=input, 1=output)
-    input  wire       ena,      // always 1 when the design is powered, so you can ignore it
-    input  wire       clk,      // clock
-    input  wire       rst_n     // reset_n - low to reset
+    input  wire [7:0] ui_in,    // ui_in[7:6]: operation code, ui_in[5:0]: operand A lower bits
+    output wire [7:0] uo_out,   // Output: result lower 8 bits
+    input  wire [7:0] uio_in,   // Operand B
+    output wire [7:0] uio_out,  // Output: result higher 8 bits
+    output wire [7:0] uio_oe,   // Output enable
+    input  wire       ena,      // Enable
+    input  wire       clk,      // Clock
+    input  wire       rst_n     // Reset (active low)
 );
-
     // Declare internal registers
     reg [31:0] first_input_number;
     reg [31:0] second_input_number;
     reg [1:0]  operation;
     wire [63:0] result;
 
-    // Instantiate the calculator module with the clock
+    // Map inputs from ui_in and uio_in
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            first_input_number <= 32'd0;
+            second_input_number <= 32'd0;
+            operation <= 2'd0;
+        end else if (ena) begin
+            operation <= ui_in[7:6];           // Use ui_in[7:6] for operation
+            first_input_number <= {24'd0, ui_in[5:0], 2'd0}; // Extend ui_in[5:0] to 32 bits
+            second_input_number <= {24'd0, uio_in};  // Extend uio_in[7:0] to 32 bits
+        end
+    end
+
+    // Instantiate the calculator module
     calculator calculator_instance (
         .clk(clk),
         .first_input_number (first_input_number),
@@ -33,26 +45,12 @@ module tt_um_bsrk_i2c_calc (
         .result (result)
     );
 
-    assign uo_out  = 0;
-    assign uio_out = 0;
-    assign uio_oe  = 0;
+    // Assign result to outputs
+    assign uo_out = result[7:0];        // Lower 8 bits of result
+    assign uio_out = result[15:8];      // Next 8 bits of result
+    assign uio_oe = 8'hFF;              // Enable uio_out as outputs
 
-    // Unused inputs
-    wire _unused = &{ena, rst_n, ui_in, uio_in};
-
-    // Assign values for simulation purposes
-    always @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
-            first_input_number <= 0;
-            second_input_number <= 0;
-            operation <= 0;
-        end else begin
-            // These values will remain constant unless changed
-            // For dynamic testing, we can update them via tasks or DPI calls
-            first_input_number <= 32'd28;
-            second_input_number <= 32'd4;
-            operation <= 2'b00; // Change as needed for testing
-        end
-    end
+    // Use other inputs to prevent warnings
+    wire _unused = &{ui_in[5:0], uio_in, ena};
 
 endmodule
