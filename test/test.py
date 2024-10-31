@@ -39,6 +39,8 @@ async def test_calculator_operations(dut):
         result_value = int(dut.user_project.calculator_instance.result.value)
         expected_value = test['expected']
 
+        dut._log.info(f"first {test['first']}, second {test['second']}, clock cycles {dut.clk.value}, expected {expected_value}, got {result_value}")
+
         if test['op'] == 2:
             # Multiplication result may be in upper 64 bits
             expected_result = test['expected']

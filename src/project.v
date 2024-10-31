@@ -4,7 +4,7 @@
  */
 
 `default_nettype none
-`timescale 1ns / 1ps
+// `timescale 1ns / 1ps
 `include "calculator_module.v"
 
 module tt_um_bsrk_i2c_calc (
