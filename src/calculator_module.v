@@ -1,4 +1,3 @@
-
 module calculator(
     input wire [31:0] first_input_number,
     input wire [31:0] second_input_number,
@@ -12,17 +11,16 @@ module calculator(
 
     always @(*) 
     begin
-        
         case(operation)
             OPR_ADD:
             begin
-                result[32:0] = first_input_number + second_input_number;
-                result[63:33] = 31'h0;
+                result[31:0] = first_input_number + second_input_number;
+                result[63:32] = 32'h0;
             end
             OPR_SUB: 
             begin
-                result[32:0] = first_input_number - second_input_number;
-                result[63:33] = 31'h0;
+                result[31:0] = first_input_number - second_input_number;
+                result[63:32] = 32'h0;
             end
             OPR_MUL: 
             begin
